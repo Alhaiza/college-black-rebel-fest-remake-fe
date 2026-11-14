@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Flame, Ticket, Music, LogOut, LogIn, User } from "lucide-react";
+import { Flame, Ticket, Music, LogOut, LogIn, User, ShieldAlert } from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -47,6 +47,17 @@ export const Navbar: React.FC = () => {
               </Link>
             )}
 
+            {/* Tautan Khusus Admin */}
+            {user?.role === "admin" && (
+              <Link
+                to="/admin"
+                className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 font-bold transition-colors text-sm bg-amber-500/10 px-3 py-1 rounded-md border border-amber-500/30"
+              >
+                <ShieldAlert className="w-4 h-4" />
+                Admin Panel
+              </Link>
+            )}
+
             {user ? (
               <div className="flex items-center gap-4 pl-4 border-l border-zinc-800">
                 <div className="flex items-center gap-2 text-xs text-zinc-400">
@@ -76,4 +87,3 @@ export const Navbar: React.FC = () => {
     </nav>
   );
 };
-

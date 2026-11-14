@@ -10,6 +10,14 @@ import { MyTicketsPage } from "./pages/MyTicketsPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 
+// Admin Imports
+import { ProtectedAdminRoute } from "./components/admin/ProtectedAdminRoute";
+import { AdminLayout } from "./components/admin/AdminLayout";
+import { AdminOverviewPage } from "./pages/admin/AdminOverviewPage";
+import { AdminTiersPage } from "./pages/admin/AdminTiersPage";
+import { AdminOrdersPage } from "./pages/admin/AdminOrdersPage";
+import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -31,29 +39,47 @@ export const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-1">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/lineup" element={<LineupPage />} />
-                <Route path="/tickets" element={<TicketPurchasePage />} />
-                <Route
-                  path="/my-tickets"
-                  element={
-                    <ProtectedRoute>
-                      <MyTicketsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-              </Routes>
-            </main>
-            <footer className="py-8 border-t border-zinc-900 text-center text-xs text-zinc-600">
-              © 2022 - 2026 Black Rebel Fest (BRF22). Remade with MERN Stack & Tailwind CSS.
-            </footer>
-          </div>
+          <Routes>
+            {/* PUBLIC FESTIVAL LAYOUT */}
+            <Route
+              path="/*"
+              element={
+                <div className="flex flex-col min-h-screen">
+                  <Navbar />
+                  <main className="flex-1">
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/lineup" element={<LineupPage />} />
+                      <Route path="/tickets" element={<TicketPurchasePage />} />
+                      <Route
+                        path="/my-tickets"
+                        element={
+                          <ProtectedRoute>
+                            <MyTicketsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<RegisterPage />} />
+                    </Routes>
+                  </main>
+                  <footer className="py-8 border-t border-zinc-900 text-center text-xs text-zinc-600">
+                    © 2022 - 2026 Black Rebel Fest (BRF22). Remade with MERN Stack & Tailwind CSS.
+                  </footer>
+                </div>
+              }
+            />
+
+            {/* PROTECTED ADMIN DASHBOARD LAYOUT */}
+            <Route path="/admin" element={<ProtectedAdminRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route index element={<AdminOverviewPage />} />
+                <Route path="tiers" element={<AdminTiersPage />} />
+                <Route path="orders" element={<AdminOrdersPage />} />
+                <Route path="scanner" element={<AdminScannerPage />} />
+              </Route>
+            </Route>
+          </Routes>
         </BrowserRouter>
       </AuthProvider>
     </QueryClientProvider>
