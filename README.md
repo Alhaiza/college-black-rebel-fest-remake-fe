@@ -109,5 +109,5 @@ User Membuka Web di Browser
    - **Build Command**: `pnpm run build`.
    - **Output Directory**: `dist`.
 5. Buka bagian **Environment Variables**, tambahkan:
-   - `VITE_API_URL` = `https://nama-backend-anda.vercel.app/api/v1` *(Gunakan URL Backend Vercel Anda)*
+   - `VITE_API_URL` = `https://<your-backend-app>.vercel.app/api/v1`
 6. Klik **Deploy**! Website festival Anda akan aktif dalam hitungan detik.
