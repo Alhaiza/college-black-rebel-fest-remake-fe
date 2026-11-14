@@ -38,7 +38,7 @@ export const Navbar: React.FC = () => {
               <Ticket className="w-4 h-4" />
               Tickets
             </Link>
-            {user && (
+            {user && user.role !== "admin" && (
               <Link
                 to="/my-tickets"
                 className="flex items-center gap-1.5 text-zinc-300 hover:text-amber-400 font-medium transition-colors text-sm"

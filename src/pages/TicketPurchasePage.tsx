@@ -75,9 +75,14 @@ export const TicketPurchasePage: React.FC = () => {
   // [STEP 4: HANDLER TOMBOL CHECKOUT]
   const handleCheckout = () => {
     setErrorMessage("");
-    // Guard clause: wajib login terlebih dahulu
+    // Guard 1: Wajib login
     if (!user) {
       navigate("/login");
+      return;
+    }
+    // Guard 2: Admin dilarang memesan tiket festival
+    if (user.role === "admin") {
+      setErrorMessage("Akun Administrator tidak dapat memesan tiket. Silakan gunakan akun penonton (user reguler).");
       return;
     }
     if (!selectedTier) return;

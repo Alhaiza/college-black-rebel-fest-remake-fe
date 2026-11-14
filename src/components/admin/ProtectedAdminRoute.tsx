@@ -30,3 +30,4 @@ export const ProtectedAdminRoute: React.FC = () => {
 
   return <Outlet />;
 };
+
