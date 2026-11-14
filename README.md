@@ -1,32 +1,91 @@
-# React + TypeScript + Vite
+# 🎸 Black Rebel Fest 2022 (BRF22) - Frontend SPA
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplikasi web antarmuka pengguna (Frontend Single Page Application) untuk **Black Rebel Fest 2022**, dibangun menggunakan **React 19, Vite, TypeScript, dan Tailwind CSS**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🎯 Mengapa Dibuat & Masalah yang Diselesaikan
 
-## React Compiler
+1. **Menggantikan Full Page Reload**: Di PHP lama, setiap klik link memuat ulang seluruh dokumen HTML (`index.php?lineup`, `tiket.php`). Di React SPA, navigasi instan tanpa refresh halaman menggunakan `react-router-dom`.
+2. **Desain Modern Responsif**: Menggantikan Bootstrap CDN versi campur aduk dengan utility-first **Tailwind CSS v4** bertema gelap (*Dark Zinc & Amber Glow*) khas festival rock/metal.
+3. **Penyimpanan State & Cache Terpusat**: Menggunakan `@tanstack/react-query` untuk mengelola data jadwal konser dan inventaris tiket secara otomatis (caching, background refetching, loading states).
+4. **Digital E-Ticket Barcode**: Menghasilkan **QR Code SVG** yang bisa langsung dipindai pada hari-H festival untuk penukaran gelang (*wristband*).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 📁 Struktur Folder Frontend
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```text
+src/
+├── components/
+│   └── layout/
+│       └── Navbar.tsx           # Navigasi sticky blur, deteksi session user aktif
+├── context/
+│   └── AuthContext.tsx          # Provider global autentikasi (user, login, logout)
+├── pages/
+│   ├── HomePage.tsx             # Halaman utama festival hero & teaser
+│   ├── LineupPage.tsx           # Jadwal artis interaktif berdasar filter Day 1, 2, 3
+│   ├── TicketPurchasePage.tsx   # Katalog tiket, kuota live, kuantitas, & tombol checkout
+│   ├── MyTicketsPage.tsx        # Halaman e-ticket yang menampilkan voucher & QR Code
+│   ├── LoginPage.tsx            # Form login pengguna
+│   └── RegisterPage.tsx         # Form registrasi pengguna baru
+├── services/
+│   └── api.ts                   # Instance Axios terpusat dengan withCredentials: true
+├── types/
+│   └── index.ts                 # Definisi type data User, TicketTier, Order, Lineup
+├── App.tsx                      # Routing & Provider Hierarchy (QueryClient, AuthProvider)
+├── index.css                    # Setup Tailwind CSS & styling global
+└── main.tsx                     # Entry point React DOM render
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+---
+
+## ⚡ Alur Eksekusi Data (Execution Flow)
+
+```text
+User Membuka Web di Browser
+       │
+       ▼
+[main.tsx] -> Mount root DOM
+       │
+       ▼
+[App.tsx] -> QueryClientProvider -> AuthProvider (Cek /auth/me via HttpOnly cookie)
+       │
+       ▼
+[Navbar.tsx] -> Menampilkan nama user jika login, atau tombol 'Sign In' jika tamu
+       │
+       ▼
+[Pages] (HomePage / LineupPage / TicketsPage)
+       │
+       ▼
+[services/api.ts] (Axios) -> Mengirim HTTP Request ke Backend (http://localhost:5000/api/v1)
+       │
+       ▼
+[State Update] -> Data ditampilkan ke layar dengan komponen reaktif Tailwind
+```
+
+---
+
+## 🛠️ Cara Menjalankan Frontend
+
+### 1. Prasyarat
+- Node.js (v20+ LTS)
+- pnpm (atau npm)
+- Backend API sudah berjalan di `http://localhost:5000`
+
+### 2. Install Dependencies
+```bash
+pnpm install
+```
+
+### 3. Jalankan Aplikasi
+```bash
+pnpm run dev
+```
+Buka browser Anda di: `http://localhost:5173`
+
+### 4. Build Production
+```bash
+pnpm run build
+```
+Hasil build akan tersimpan di folder `dist/` siap untuk di-deploy ke Vercel, Netlify, atau Cloudflare Pages.
