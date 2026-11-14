@@ -10,19 +10,30 @@ Aplikasi web antarmuka pengguna (Frontend Single Page Application) untuk **Black
 2. **Desain Modern Responsif**: Menggantikan Bootstrap CDN versi campur aduk dengan utility-first **Tailwind CSS v4** bertema gelap (*Dark Zinc & Amber Glow*) khas festival rock/metal.
 3. **Penyimpanan State & Cache Terpusat**: Menggunakan `@tanstack/react-query` untuk mengelola data jadwal konser dan inventaris tiket secara otomatis (caching, background refetching, loading states).
 4. **Digital E-Ticket Barcode**: Menghasilkan **QR Code SVG** yang bisa langsung dipindai pada hari-H festival untuk penukaran gelang (*wristband*).
+5. **Admin Dashboard Terproteksi**: Terdapat antarmuka panel festival khusus panitia (`/admin`) untuk memantau omzet, restock tiket, dan memindai QR code tiket di gerbang.
 
 ---
 
 ## 📁 Struktur Folder Frontend
 
 ```text
+public/
+└── img/                         # Aset foto artis lineup yang dimigrasi dari proyek lama
 src/
 ├── components/
+│   ├── admin/
+│   │   ├── AdminLayout.tsx      # Sidebar shell dan navigasi panel admin
+│   │   └── ProtectedAdminRoute.tsx # Route guard: khusus akun role === 'admin'
 │   └── layout/
-│       └── Navbar.tsx           # Navigasi sticky blur, deteksi session user aktif
+│       └── Navbar.tsx           # Navigasi sticky blur, mendeteksi user/admin aktif
 ├── context/
 │   └── AuthContext.tsx          # Provider global autentikasi (user, login, logout)
 ├── pages/
+│   ├── admin/
+│   │   ├── AdminOverviewPage.tsx   # Dashboard analitik omzet & inventaris kuota
+│   │   ├── AdminTiersPage.tsx      # Manajemen restock kuota & ubah harga tiket
+│   │   ├── AdminOrdersPage.tsx     # Tabel audit transaksi semua penonton
+│   │   └── AdminScannerPage.tsx    # Terminal QR scanner check-in di gerbang
 │   ├── HomePage.tsx             # Halaman utama festival hero & teaser
 │   ├── LineupPage.tsx           # Jadwal artis interaktif berdasar filter Day 1, 2, 3
 │   ├── TicketPurchasePage.tsx   # Katalog tiket, kuota live, kuantitas, & tombol checkout
@@ -36,6 +47,7 @@ src/
 ├── App.tsx                      # Routing & Provider Hierarchy (QueryClient, AuthProvider)
 ├── index.css                    # Setup Tailwind CSS & styling global
 └── main.tsx                     # Entry point React DOM render
+Dockerfile                       # Multi-stage production container dengan Nginx
 ```
 
 ---
@@ -52,13 +64,13 @@ User Membuka Web di Browser
 [App.tsx] -> QueryClientProvider -> AuthProvider (Cek /auth/me via HttpOnly cookie)
        │
        ▼
-[Navbar.tsx] -> Menampilkan nama user jika login, atau tombol 'Sign In' jika tamu
+[Navbar.tsx] -> Menampilkan nama user & tombol 'Admin Panel' (jika akun admin)
        │
        ▼
-[Pages] (HomePage / LineupPage / TicketsPage)
+[Pages] (HomePage / LineupPage / TicketsPage / Admin Dashboard)
        │
        ▼
-[services/api.ts] (Axios) -> Mengirim HTTP Request ke Backend (http://localhost:5000/api/v1)
+[services/api.ts] (Axios) -> Mengirim HTTP Request ke Backend (withCredentials: true)
        │
        ▼
 [State Update] -> Data ditampilkan ke layar dengan komponen reaktif Tailwind
@@ -66,26 +78,36 @@ User Membuka Web di Browser
 
 ---
 
-## 🛠️ Cara Menjalankan Frontend
+## 🚀 Panduan Menjalankan Proyek
 
-### 1. Prasyarat
-- Node.js (v20+ LTS)
-- pnpm (atau npm)
-- Backend API sudah berjalan di `http://localhost:5000`
+### 1. Menjalankan di Lokal (Development)
+1. Salin `.env.example` menjadi `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   *Pastikan isinya mengarah ke API Backend lokal: `VITE_API_URL=http://localhost:5000/api/v1`.*
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Jalankan development server:
+   ```bash
+   pnpm run dev
+   ```
+   Buka browser di: `http://localhost:5173`.
 
-### 2. Install Dependencies
-```bash
-pnpm install
-```
+---
 
-### 3. Jalankan Aplikasi
-```bash
-pnpm run dev
-```
-Buka browser Anda di: `http://localhost:5173`
+## ☁️ Panduan Deploy Gratis ke Vercel
 
-### 4. Build Production
-```bash
-pnpm run build
-```
-Hasil build akan tersimpan di folder `dist/` siap untuk di-deploy ke Vercel, Netlify, atau Cloudflare Pages.
+1. Buka [vercel.com](https://vercel.com) dan login dengan akun GitHub Anda.
+2. Klik tombol **Add New...** -> Pilih **Project**.
+3. Import repository GitHub: `Alhaiza/college-black-rebel-fest-remake-fe`.
+4. Pada halaman konfigurasi project:
+   - **Framework Preset**: `Vite` (terdeteksi otomatis).
+   - **Root Directory**: `./`.
+   - **Build Command**: `pnpm run build`.
+   - **Output Directory**: `dist`.
+5. Buka bagian **Environment Variables**, tambahkan:
+   - `VITE_API_URL` = `https://nama-backend-anda.vercel.app/api/v1` *(Gunakan URL Backend Vercel Anda)*
+6. Klik **Deploy**! Website festival Anda akan aktif dalam hitungan detik.
