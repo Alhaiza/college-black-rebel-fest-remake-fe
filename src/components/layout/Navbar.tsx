@@ -13,27 +13,27 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
+    <nav className="sticky top-0 z-50 bg-[var(--color-paper)] border-b border-[var(--color-rule)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2 group">
-            <Flame className="w-7 h-7 text-amber-500 group-hover:scale-110 transition-transform" />
-            <span className="font-extrabold text-xl tracking-wider text-amber-500">
-              BRF<span className="text-zinc-100">22</span>
+            <Flame className="w-6 h-6 text-[var(--color-accent)] motion-safe:transition-transform group-hover:scale-105" />
+            <span className="font-display text-2xl tracking-normal text-[var(--color-ink)]">
+              BLACK REBEL <span className="text-[var(--color-accent)]">2022</span>
             </span>
           </Link>
 
           <div className="flex items-center gap-6">
             <Link
               to="/lineup"
-              className="flex items-center gap-1.5 text-zinc-300 hover:text-amber-400 font-medium transition-colors text-sm"
+              className="flex items-center gap-1.5 text-[var(--color-ink-2)] hover:text-[var(--color-accent)] font-medium transition-colors text-sm"
             >
               <Music className="w-4 h-4" />
-              Line Up
+              Lineup
             </Link>
             <Link
               to="/tickets"
-              className="flex items-center gap-1.5 text-zinc-300 hover:text-amber-400 font-medium transition-colors text-sm"
+              className="flex items-center gap-1.5 text-[var(--color-ink-2)] hover:text-[var(--color-accent)] font-medium transition-colors text-sm"
             >
               <Ticket className="w-4 h-4" />
               Tickets
@@ -41,9 +41,9 @@ export const Navbar: React.FC = () => {
             {user && user.role !== "admin" && (
               <Link
                 to="/my-tickets"
-                className="flex items-center gap-1.5 text-zinc-300 hover:text-amber-400 font-medium transition-colors text-sm"
+                className="flex items-center gap-1.5 text-[var(--color-ink-2)] hover:text-[var(--color-accent)] font-medium transition-colors text-sm"
               >
-                My Tickets
+                My tickets
               </Link>
             )}
 
@@ -51,34 +51,34 @@ export const Navbar: React.FC = () => {
             {user?.role === "admin" && (
               <Link
                 to="/admin"
-                className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 font-bold transition-colors text-sm bg-amber-500/10 px-3 py-1 rounded-md border border-amber-500/30"
+                className="flex items-center gap-1.5 text-[var(--color-accent)] hover:text-[var(--color-ink)] font-medium transition-colors text-sm bg-[var(--color-paper-2)] px-3 py-1 border border-[var(--color-rule)]"
               >
                 <ShieldAlert className="w-4 h-4" />
-                Admin Panel
+                Admin panel
               </Link>
             )}
 
             {user ? (
-              <div className="flex items-center gap-4 pl-4 border-l border-zinc-800">
-                <div className="flex items-center gap-2 text-xs text-zinc-400">
-                  <User className="w-4 h-4 text-amber-500" />
-                  <span className="text-zinc-200 font-semibold">{user.username}</span>
+              <div className="flex items-center gap-4 pl-4 border-l border-[var(--color-rule)]">
+                <div className="flex items-center gap-2 text-xs text-[var(--color-muted)]">
+                  <User className="w-4 h-4 text-[var(--color-accent)]" />
+                  <span className="text-[var(--color-ink)] font-medium">{user.username}</span>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-1 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 rounded-md transition-colors"
+                  className="flex items-center gap-1 text-xs bg-[var(--color-paper-2)] hover:bg-[var(--color-paper-3)] text-[var(--color-ink)] px-3 py-1.5 border border-[var(--color-rule)] transition-colors"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  Logout
+                  Sign out
                 </button>
               </div>
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-1 text-xs bg-amber-500 hover:bg-amber-400 text-black font-bold px-4 py-2 rounded-md transition-all shadow-md shadow-amber-500/10"
+                className="flex items-center gap-1.5 text-xs bg-[var(--color-accent)] hover:bg-[var(--color-accent-deep)] text-[var(--color-accent-ink)] font-bold px-4 py-2 transition-colors"
               >
                 <LogIn className="w-4 h-4" />
-                Sign In
+                Sign in
               </Link>
             )}
           </div>

@@ -33,15 +33,15 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-md p-8 rounded-2xl border border-zinc-800 bg-zinc-900/40 backdrop-blur">
+      <div className="w-full max-w-md p-8 border border-[var(--color-rule)] bg-[var(--color-paper-2)]">
         <div className="flex flex-col items-center mb-8">
-          <Flame className="w-10 h-10 text-amber-500 mb-2" />
-          <h2 className="text-2xl font-black text-white">Welcome Back</h2>
-          <p className="text-xs text-zinc-400">Sign in to manage and view your festival tickets</p>
+          <Flame className="w-8 h-8 text-[var(--color-accent)] mb-2" />
+          <h2 className="text-3xl font-display font-medium text-[var(--color-ink)] uppercase">Welcome Back</h2>
+          <p className="text-xs text-[var(--color-muted)]">Sign in to manage and view your festival tickets</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-400 text-xs">
+          <div className="mb-6 p-3 bg-[var(--color-paper-3)] border border-[var(--color-error)] flex items-center gap-2 text-[var(--color-error)] text-xs">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{error}</span>
           </div>
@@ -49,41 +49,41 @@ export const LoginPage: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-zinc-300 mb-1.5">Username</label>
+            <label className="block text-xs font-medium text-[var(--color-muted)] mb-1.5">Username</label>
             <input
               type="text"
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="e.g. johndoe"
-              className="w-full px-3.5 py-2.5 rounded-lg bg-zinc-950 border border-zinc-800 text-white text-sm focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full px-3.5 py-2.5 bg-[var(--color-paper)] border border-[var(--color-rule)] text-[var(--color-ink)] text-sm focus:border-[var(--color-accent)] transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-zinc-300 mb-1.5">Password</label>
+            <label className="block text-xs font-medium text-[var(--color-muted)] mb-1.5">Password</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 rounded-lg bg-zinc-950 border border-zinc-800 text-white text-sm focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full px-3.5 py-2.5 bg-[var(--color-paper)] border border-[var(--color-rule)] text-[var(--color-ink)] text-sm focus:border-[var(--color-accent)] transition-colors"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-sm rounded-lg transition-all shadow-md shadow-amber-500/10 disabled:opacity-50"
+            className="w-full py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-deep)] text-[var(--color-accent-ink)] font-bold font-display text-sm uppercase transition-colors disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? "Signing in…" : "Sign In"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-zinc-500">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-amber-500 font-bold hover:underline">
+        <p className="mt-6 text-center text-xs text-[var(--color-muted)]">
+          Don’t have an account?{" "}
+          <Link to="/register" className="text-[var(--color-accent)] font-medium hover:underline">
             Register here
           </Link>
         </p>

@@ -29,7 +29,7 @@ const queryClient = new QueryClient({
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div className="text-center py-20 text-zinc-500">Checking auth...</div>;
+  if (loading) return <div className="text-center py-20 text-[var(--color-muted)]">Checking auth…</div>;
   if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 };

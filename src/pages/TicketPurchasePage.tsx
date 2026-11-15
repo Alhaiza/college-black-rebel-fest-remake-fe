@@ -1,27 +1,3 @@
-/**
- * ============================================================================
- * [TICKET PURCHASE PAGE] - src/pages/TicketPurchasePage.tsx
- * ============================================================================
- * 
- * 1. KENAPA DIBUAT? (Why it exists):
- *    Di PHP lama (`tiket.php`), pemilihan jenis tiket dan kuantitas menggunakan
- *    form HTML dropdown statis tanpa indikator sisa stok, dan checkout dilempar
- *    ke `bayar.php` yang rawan bentrok kuota.
- * 
- * 2. DESKRIPSI & FUNGSI (What it does):
- *    Halaman interaktif modern di mana user dapat melihat kartu tier tiket (Bronze, Silver, Gold),
- *    melihat kuota sisa secara real-time, memilih kuantitas dengan tombol +/- dinamis,
- *    dan melakukan *instant checkout* yang langsung terhubung ke backend atomic order.
- * 
- * 3. ALUR EKSEKUSI (Execution Flow):
- *    [STEP 1] -> Ambil daftar tier tiket dari backend (`GET /tickets/tiers`) via `useQuery`.
- *    [STEP 2] -> User mengklik salah satu kartu tier (misal: "Gold Tier").
- *    [STEP 3] -> Bar checkout di bagian bawah muncul, menghitung subtotal harga secara otomatis.
- *    [STEP 4] -> User menekan tombol "Confirm & Pay" -> memicu `orderMutation.mutate()`.
- *    [STEP 5] -> Jika user belum login, diarahkan otomatis ke `/login`.
- *    [STEP 6] -> Jika berhasil, invalidate query tiket (agar stok terupdate) dan arahkan ke `/my-tickets`.
- */
-
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +7,6 @@ import { useAuth } from "../context/AuthContext";
 import { Check, AlertCircle } from "lucide-react";
 
 export const TicketPurchasePage: React.FC = () => {
-  // [STEP 1: INISIALISASI HOOKS & STATE]
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -40,8 +15,6 @@ export const TicketPurchasePage: React.FC = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // [STEP 2: FETCH DATA TIER TIKET MENGGUNAKAN REACT QUERY]
-  // Otomatis menangani caching dan status loading
   const { data: tiers, isLoading } = useQuery<TicketTier[]>({
     queryKey: ["ticketTiers"],
     queryFn: async () => {
@@ -50,7 +23,6 @@ export const TicketPurchasePage: React.FC = () => {
     },
   });
 
-  // [STEP 3: MUTASI PEMESANAN TIKET (POST /orders)]
   const orderMutation = useMutation({
     mutationFn: async () => {
       if (!selectedTier) return;
@@ -61,9 +33,7 @@ export const TicketPurchasePage: React.FC = () => {
       return res.data;
     },
     onSuccess: () => {
-      // Refresh cache tiket agar sisa kuota terbaru langsung terlihat
       queryClient.invalidateQueries({ queryKey: ["ticketTiers"] });
-      // Navigasikan user ke halaman tiket saya untuk melihat QR Code
       navigate("/my-tickets");
     },
     onError: (err: any) => {
@@ -72,15 +42,12 @@ export const TicketPurchasePage: React.FC = () => {
     },
   });
 
-  // [STEP 4: HANDLER TOMBOL CHECKOUT]
   const handleCheckout = () => {
     setErrorMessage("");
-    // Guard 1: Wajib login
     if (!user) {
       navigate("/login");
       return;
     }
-    // Guard 2: Admin dilarang memesan tiket festival
     if (user.role === "admin") {
       setErrorMessage("Akun Administrator tidak dapat memesan tiket. Silakan gunakan akun penonton (user reguler).");
       return;
@@ -89,29 +56,26 @@ export const TicketPurchasePage: React.FC = () => {
     orderMutation.mutate();
   };
 
-  // [STEP 5: RENDER UI DENGAN TEMA FESTIVAL MODERN]
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-3">
-          SECURE YOUR <span className="text-amber-500">TICKETS</span>
+        <h1 className="text-5xl sm:text-7xl font-display font-light text-[var(--color-ink)] mb-3 uppercase">
+          Secure Your <span className="text-[var(--color-accent)] font-normal">Tickets</span>
         </h1>
-        <p className="text-zinc-400 text-sm max-w-lg mx-auto">
+        <p className="text-[var(--color-muted)] text-sm max-w-lg mx-auto">
           Pilih kategori tiket festival Anda. Seluruh tiket sudah mencakup akses konser multi-hari dan barcode elektronik resmi.
         </p>
       </div>
 
-      {/* Tampilan pesan error jika terjadi kegagalan/stok habis */}
       {errorMessage && (
-        <div className="max-w-xl mx-auto mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3 text-red-400 text-sm">
+        <div className="max-w-xl mx-auto mb-8 p-4 bg-[var(--color-paper-2)] border border-[var(--color-error)] flex items-center gap-3 text-[var(--color-error)] text-sm">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      {/* Grid Katalog Tiket */}
       {isLoading ? (
-        <div className="text-center py-20 text-zinc-500">Memuat ketersediaan tiket...</div>
+        <div className="text-center py-20 text-[var(--color-muted)]">Memuat ketersediaan tiket…</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {tiers?.map((tier) => {
@@ -122,39 +86,39 @@ export const TicketPurchasePage: React.FC = () => {
               <div
                 key={tier._id}
                 onClick={() => !isSoldOut && setSelectedTier(tier)}
-                className={`relative flex flex-col justify-between p-6 rounded-2xl border transition-all cursor-pointer ${
+                className={`relative flex flex-col justify-between p-6 border transition-colors cursor-pointer ${
                   isSelected
-                    ? "border-amber-500 bg-amber-500/5 shadow-xl shadow-amber-500/10 scale-105"
+                    ? "border-[var(--color-accent)] bg-[var(--color-paper-2)]"
                     : isSoldOut
-                    ? "opacity-50 border-zinc-800 bg-zinc-900/20 cursor-not-allowed"
-                    : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700"
+                    ? "opacity-50 border-[var(--color-rule)] bg-[var(--color-paper)] cursor-not-allowed"
+                    : "border-[var(--color-rule)] bg-[var(--color-paper-2)] hover:border-[var(--color-muted)]"
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-white">{tier.name}</h3>
+                    <h3 className="text-2xl font-display font-medium text-[var(--color-ink)] uppercase">{tier.name}</h3>
                     <span
-                      className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                      className={`text-xs px-2 py-0.5 font-medium border ${
                         isSoldOut
-                          ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                          : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          ? "border-[var(--color-error)] text-[var(--color-error)]"
+                          : "border-[var(--color-success)] text-[var(--color-success)]"
                       }`}
                     >
-                      {isSoldOut ? "SOLD OUT" : `Sisa ${tier.availableQuota}`}
+                      {isSoldOut ? "Sold out" : `Sisa ${tier.availableQuota}`}
                     </span>
                   </div>
 
                   <div className="mb-6">
-                    <span className="text-3xl font-extrabold text-white">
+                    <span className="text-3xl font-display font-light text-[var(--color-ink)]">
                       Rp {tier.price.toLocaleString("id-ID")}
                     </span>
-                    <span className="text-zinc-500 text-xs ml-1">/ tiket</span>
+                    <span className="text-[var(--color-muted)] text-xs ml-1">/ tiket</span>
                   </div>
 
                   <ul className="space-y-3 mb-6">
                     {tier.perks.map((perk, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-xs text-zinc-300">
-                        <Check className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                      <li key={idx} className="flex items-center gap-2 text-xs text-[var(--color-ink-2)]">
+                        <Check className="w-4 h-4 text-[var(--color-accent)] flex-shrink-0" />
                         <span>{perk}</span>
                       </li>
                     ))}
@@ -162,16 +126,17 @@ export const TicketPurchasePage: React.FC = () => {
                 </div>
 
                 <button
+                  type="button"
                   disabled={isSoldOut}
-                  className={`w-full py-2.5 rounded-lg font-bold text-xs transition-colors ${
+                  className={`w-full py-2.5 font-display text-sm uppercase transition-colors ${
                     isSelected
-                      ? "bg-amber-500 text-black"
+                      ? "bg-[var(--color-accent)] text-[var(--color-accent-ink)] font-bold"
                       : isSoldOut
-                      ? "bg-zinc-800 text-zinc-500"
-                      : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+                      ? "bg-[var(--color-paper-3)] text-[var(--color-muted)]"
+                      : "bg-[var(--color-paper-3)] text-[var(--color-ink)] hover:bg-[var(--color-paper-2)] border border-[var(--color-rule)]"
                   }`}
                 >
-                  {isSoldOut ? "Habis Terjual" : isSelected ? "Tier Dipilih" : "Pilih Kategori"}
+                  {isSoldOut ? "Habis terjual" : isSelected ? "Tier dipilih" : "Pilih kategori"}
                 </button>
               </div>
             );
@@ -181,27 +146,29 @@ export const TicketPurchasePage: React.FC = () => {
 
       {/* Bar Sticky Checkout */}
       {selectedTier && (
-        <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/90 backdrop-blur max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="p-6 border border-[var(--color-rule)] bg-[var(--color-paper-2)] max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
-            <div className="text-xs text-zinc-400 mb-1">Kategori: {selectedTier.name}</div>
-            <div className="text-2xl font-black text-amber-500">
+            <div className="text-xs text-[var(--color-muted)] mb-1">Kategori: {selectedTier.name}</div>
+            <div className="text-3xl font-display font-medium text-[var(--color-accent)]">
               Rp {(selectedTier.price * quantity).toLocaleString("id-ID")}
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             {/* Counter Kuantitas */}
-            <div className="flex items-center gap-2 bg-zinc-950 border border-zinc-800 rounded-lg p-1">
+            <div className="flex items-center gap-2 bg-[var(--color-paper)] border border-[var(--color-rule)] p-1">
               <button
+                type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-8 h-8 rounded bg-zinc-900 text-white font-bold hover:bg-zinc-800"
+                className="w-8 h-8 bg-[var(--color-paper-2)] text-[var(--color-ink)] font-display hover:bg-[var(--color-paper-3)] transition-colors"
               >
                 -
               </button>
-              <span className="w-8 text-center font-bold text-sm">{quantity}</span>
+              <span className="w-8 text-center font-display text-base text-[var(--color-ink)]">{quantity}</span>
               <button
+                type="button"
                 onClick={() => setQuantity(Math.min(5, selectedTier.availableQuota, quantity + 1))}
-                className="w-8 h-8 rounded bg-zinc-900 text-white font-bold hover:bg-zinc-800"
+                className="w-8 h-8 bg-[var(--color-paper-2)] text-[var(--color-ink)] font-display hover:bg-[var(--color-paper-3)] transition-colors"
               >
                 +
               </button>
@@ -209,11 +176,12 @@ export const TicketPurchasePage: React.FC = () => {
 
             {/* Tombol Eksekusi Order */}
             <button
+              type="button"
               onClick={handleCheckout}
               disabled={orderMutation.isPending}
-              className="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-sm rounded-lg transition-all shadow-md shadow-amber-500/20 disabled:opacity-50"
+              className="px-6 py-2.5 bg-[var(--color-accent)] hover:bg-[var(--color-accent-deep)] text-[var(--color-accent-ink)] font-bold font-display text-sm uppercase transition-colors disabled:opacity-50"
             >
-              {orderMutation.isPending ? "Memproses..." : "Konfirmasi & Bayar"}
+              {orderMutation.isPending ? "Memproses…" : "Konfirmasi & bayar"}
             </button>
           </div>
         </div>

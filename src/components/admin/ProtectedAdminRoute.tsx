@@ -17,8 +17,8 @@ export const ProtectedAdminRoute: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-500">
-        Memverifikasi hak akses administrator...
+      <div className="min-h-screen flex items-center justify-center bg-[var(--color-paper)] text-[var(--color-muted)]">
+        Memverifikasi hak akses administrator…
       </div>
     );
   }

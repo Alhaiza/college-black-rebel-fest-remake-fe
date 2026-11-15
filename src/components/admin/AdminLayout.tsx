@@ -1,11 +1,3 @@
-/**
- * ============================================================================
- * [ADMIN LAYOUT SHELL] - src/components/admin/AdminLayout.tsx
- * ============================================================================
- * 
- * Layout dashboard admin dengan Sidebar navigasi modern bertema gelap.
- */
-
 import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Layers, ShoppingBag, QrCode, LogOut, ArrowLeft } from "lucide-react";
@@ -23,13 +15,13 @@ export const AdminLayout: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen flex bg-zinc-950 text-zinc-100 font-sans">
+    <div className="min-h-screen flex bg-[var(--color-paper)] text-[var(--color-ink)] font-body">
       {/* Sidebar Navigasi Admin */}
-      <aside className="w-64 border-r border-zinc-800 bg-zinc-900/60 backdrop-blur flex flex-col justify-between p-6">
+      <aside className="w-64 border-r border-[var(--color-rule)] bg-[var(--color-paper-2)] flex flex-col justify-between p-6">
         <div>
           <div className="flex items-center gap-2 mb-8">
-            <span className="font-black text-xl tracking-wider text-amber-500">
-              BRF22 <span className="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono">PANEL</span>
+            <span className="font-display text-2xl uppercase tracking-normal text-[var(--color-ink)]">
+              BRF22 <span className="text-xs px-2 py-0.5 bg-[var(--color-paper-3)] text-[var(--color-accent)] border border-[var(--color-rule)] font-sans">Panel</span>
             </span>
           </div>
 
@@ -40,10 +32,10 @@ export const AdminLayout: React.FC = () => {
                 to={item.path}
                 end={item.path === "/admin"}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                  `flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-amber-500 text-black shadow-md shadow-amber-500/20"
-                      : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                      ? "bg-[var(--color-accent)] text-[var(--color-accent-ink)] font-bold"
+                      : "text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-3)]"
                   }`
                 }
               >
@@ -54,20 +46,20 @@ export const AdminLayout: React.FC = () => {
           </nav>
         </div>
 
-        <div className="space-y-2 pt-6 border-t border-zinc-800">
+        <div className="space-y-2 pt-6 border-t border-[var(--color-rule)]">
           <button
             onClick={() => navigate("/")}
-            className="w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors"
+            className="w-full flex items-center gap-3 px-3.5 py-2 text-xs font-medium text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-3)] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Ke Festival Publik
+            Ke festival publik
           </button>
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
+            className="w-full flex items-center gap-3 px-3.5 py-2 text-xs font-medium text-[var(--color-error)] hover:bg-[var(--color-paper-3)] transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            Keluar (Logout)
+            Keluar (Sign out)
           </button>
         </div>
       </aside>
@@ -79,4 +71,3 @@ export const AdminLayout: React.FC = () => {
     </div>
   );
 };
-

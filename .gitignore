@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment secrets
+.env
+.env*.local
+
+# AI agents & harness caches
+.*
+!.gitignore
+!.oxlintrc.json
+data/
+skills/
+skills-lock.json
